@@ -24,7 +24,7 @@
 			'get_balance' => array('method' => 'GET', 'url' => '/account/get-balance/{k}/{s}'),
 			'get_pricing' => array('method' => 'GET', 'url' => '/account/get-pricing/outbound/{k}/{s}/{country_code}'),
 			'get_own_numbers' => array('method' => 'GET', 'url' => '/account/numbers/{k}/{s}'),
-			'search_numbers' => array('method' => 'GET', 'url' => '/number/search/{k}/{s}/{country_code}?pattern={pattern}'),
+			'search_numbers' => array('method' => 'GET', 'url' => '/number/search/{k}/{s}/{country_code}'),
 			'buy_number' => array('method' => 'POST', 'url' => '/number/buy/{k}/{s}/{country_code}/{msisdn}'),
 			'cancel_number' => array('method' => 'POST', 'url' => '/number/cancel/{k}/{s}/{country_code}/{msisdn}')
 		);
@@ -106,9 +106,15 @@
 		 * Get an array of all purchased numbers for your account
 		 * @return array|bool
 		 */
-		public function numbersList () {
+		public function numbersList ($size=null, $index=null, $pattern=null, $search_pattern=null) {
+            $optParams = array();
+            if ($pattern != null) $optParams['pattern'] = $pattern;
+            if ($search_pattern!= null) $optParams['search_pattern'] = $search_pattern;
+            if ($index!= null) $optParams['index'] = $index;
+            if ($size!= null) $optParams['size'] = $size;
+
 			if (!isset($this->cache['own_numbers'])) {
-				$tmp = $this->apiCall('get_own_numbers');
+				$tmp = $this->apiCall('get_own_numbers', null, $optParams);
 				if (!$tmp['data']) return false;
 
 				$this->cache['own_numbers'] = $tmp['data'];
@@ -128,10 +134,16 @@
 		 * @param $pattern Number pattern to search for
 		 * @return bool
 		 */
-		public function numbersSearch ($country_code, $pattern) {
+		public function numbersSearch ($country_code, $pattern=null, $search_pattern=null, $features=null, $index=null, $size=null ) {
 			$country_code = strtoupper($country_code);
+            $optParams = array();
+            if ($pattern != null) $optParams['pattern'] = $pattern;
+            if ($search_pattern!= null) $optParams['search_pattern'] = $search_pattern;
+            if ($features != null) $optParams['features'] = $features;
+            if ($index!= null) $optParams['index'] = $index;
+            if ($size!= null) $optParams['size'] = $size;
 
-			$tmp = $this->apiCall('search_numbers', array('country_code'=>$country_code, 'pattern'=>$pattern));
+            $tmp = $this->apiCall('search_numbers', array('country_code'=>$country_code), $optParams);
 			if (!$tmp['data'] || !isset($tmp['data']['numbers'])) return false;
 			return $tmp['data']['numbers'];
 		}
@@ -171,7 +183,7 @@
 		 * @param array $data
 		 * @return array|bool
 		 */
-		private function apiCall($command, $data=array()) {
+		private function apiCall($command, $data=array(), $optionalData=array()) {
 			if (!isset($this->rest_commands[$command])) {
 				return false;
 			}
@@ -184,6 +196,14 @@
 			$parsed_data = array();
 			foreach ($data as $k => $v) $parsed_data['{'.$k.'}'] = $v;
 			$url = str_replace(array_keys($parsed_data) ,array_values($parsed_data), $url);
+            //Add optional key-value params:
+            if (count($optionalData) > 0){
+                $url = $url.'?';
+                foreach ($optionalData as $k => $v){
+                    $url = $url.$k.'='.$v;
+                }
+            }
+
 
 			$url = trim($this->rest_base_url, '/') . $url;
 			$post_data = '';
@@ -242,3 +262,4 @@
 
 		}
 	}
+
