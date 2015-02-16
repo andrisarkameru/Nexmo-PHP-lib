@@ -1,12 +1,12 @@
 {
-    "name": "prawnsalad/nexmo",
-    "description": "prawnsalad's Nexmo-PHP-lib",
+    "name": "andrisarkameru/nexmo",
+    "description": "andrisarkameru's Nexmo-PHP-lib forked from prawnsalad",
     "keywords": ["Nexmo"],
-    "homepage": "https://github.com/prawnsalad/Nexmo-PHP-lib",
+    "homepage": "https://github.com/andrisarkameru/Nexmo-PHP-lib",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "PrawnSalad\\Nexmo\\": ["src"]
+            "andrisarkameru\\Nexmo\\": ["src"]
         }
     }
 }
