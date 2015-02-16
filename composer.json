@@ -5,10 +5,7 @@
     "homepage": "https://github.com/andrisarkameru/Nexmo-PHP-lib",
     "license": "MIT",
     "autoload": {
-        "psr-4": {
-            "andrisarkameru\\Nexmo\\": ["src"]
-        },
-        "psr-0": {"AppName": "src/"}
+        "psr-0": {"Nexmo": "src/"}
     }
 }
 
